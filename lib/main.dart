@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/package/quote/quote.dart';
 import 'package:flutter_application_1/pages/langding_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var quote = Quotes(); // Khởi tạo instance
+  var allQuotes = quote.getAll(); // Gọi phương thức
   runApp(const MyApp());
 }
 
