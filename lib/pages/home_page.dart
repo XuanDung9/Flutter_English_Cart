@@ -1,14 +1,18 @@
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/model/english_today.dart';
 import 'package:flutter_application_1/package/quote/quote.dart';
 import 'package:flutter_application_1/package/quote/quote_model.dart';
+import 'package:flutter_application_1/pages/control_page.dart';
 import 'package:flutter_application_1/values/app_assets.dart';
 import 'package:flutter_application_1/values/app_color.dart';
 import 'package:flutter_application_1/values/app_style.dart';
+import 'package:flutter_application_1/values/share_key.dart';
 import 'package:flutter_application_1/widgets/app_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,13 +48,18 @@ class _MyWidgetState extends State<HomePage> {
     return newList;
   }
 
-  getEnglishToday() {
+  getEnglishToday() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int len = prefs.getInt(ShareKeys.counter) ?? 5;
     List<String> newList = [];
-    List<int> rans = fixedListRamdom(len: 5, max: nouns.length);
+    List<int> rans = fixedListRamdom(len: len, max: nouns.length);
     rans.forEach((index) {
       newList.add(nouns[index]);
     });
-    words = newList.map((e) => getQuote(e)).toList();
+
+    setState(() {
+      words = newList.map((e) => getQuote(e)).toList();
+    });
   }
 
   EnglishToday getQuote(String noun) {
@@ -197,8 +206,9 @@ class _MyWidgetState extends State<HomePage> {
 
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Text(
+                            child: AutoSizeText(
                               '"$quote"',
+                              maxFontSize: 26,
                               style: AppStyles.h4.copyWith(
                                 letterSpacing: 1,
                                 color: AppColor.textColor,
@@ -272,7 +282,10 @@ class _MyWidgetState extends State<HomePage> {
                 child: AppButton(
                   label: 'Your control',
                   ontap: () {
-                    print('Your control');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ControlPage()),
+                    );
                   },
                 ),
               ),
