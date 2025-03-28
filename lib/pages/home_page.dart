@@ -11,6 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<HomePage> {
+  int _currentIndex = 0;
+  PageController _pageController = new PageController();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -45,6 +48,12 @@ class _MyWidgetState extends State<HomePage> {
             Container(
               height: size.height * 2 / 3,
               child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
                 itemCount: 5,
                 itemBuilder: (context, index) {
                   return Container(
@@ -120,7 +129,7 @@ class _MyWidgetState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 itemCount: 5,
                 itemBuilder: (context, index) {
-                  return buildIndicator(index == 0, size);
+                  return buildIndicator(index == _currentIndex, size);
                 },
               ),
             ),
