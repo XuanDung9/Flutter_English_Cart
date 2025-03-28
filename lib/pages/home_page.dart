@@ -8,6 +8,7 @@ import 'package:flutter_application_1/package/quote/quote_model.dart';
 import 'package:flutter_application_1/values/app_assets.dart';
 import 'package:flutter_application_1/values/app_color.dart';
 import 'package:flutter_application_1/values/app_style.dart';
+import 'package:flutter_application_1/widgets/app_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,6 +59,8 @@ class _MyWidgetState extends State<HomePage> {
     return EnglishToday(noun: noun, quote: quote?.content, id: quote?.id);
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     _pageController = PageController(viewportFraction: 0.8);
@@ -70,6 +73,7 @@ class _MyWidgetState extends State<HomePage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: AppColor.secondColor,
       appBar: AppBar(
         backgroundColor: AppColor.secondColor,
@@ -78,7 +82,12 @@ class _MyWidgetState extends State<HomePage> {
           textAlign: TextAlign.center,
           style: AppStyles.h3.copyWith(color: AppColor.textColor, fontSize: 36),
         ),
-        leading: InkWell(onTap: () {}, child: Image.asset(AppAssets.menu)),
+        leading: InkWell(
+          onTap: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+          child: Image.asset(AppAssets.menu),
+        ),
       ),
 
       body: Container(
@@ -234,6 +243,42 @@ class _MyWidgetState extends State<HomePage> {
           );
         },
         child: Image.asset(AppAssets.exchange),
+      ),
+
+      drawer: Drawer(
+        child: Container(
+          color: AppColor.lightBlue,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Your mind',
+                  style: AppStyles.h3.copyWith(color: AppColor.textColor),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: AppButton(
+                  label: 'Favorites',
+                  ontap: () {
+                    print('Favorites');
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: AppButton(
+                  label: 'Your control',
+                  ontap: () {
+                    print('Your control');
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
