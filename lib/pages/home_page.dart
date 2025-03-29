@@ -81,9 +81,14 @@ class _MyWidgetState extends State<HomePage> {
     List<EnglishToday> newFavorites =
         words.where((word) => word.isFavorite == true).toList();
     // xóa từ mới khi ko like nữa
-    oldFavorites.removeWhere(
-      (oldWord) => !newFavorites.any((newWord) => newWord.noun == oldWord.noun),
-    );
+    newFavorites =
+        newFavorites
+            .where(
+              (oldWord) => words.any(
+                (w) => w.noun == oldWord.noun && (w.isFavorite ?? false),
+              ),
+            )
+            .toList();
 
     // 🔹 Thêm các từ mới vào danh sách cũ (tránh trùng lặp)
     for (var word in newFavorites) {
