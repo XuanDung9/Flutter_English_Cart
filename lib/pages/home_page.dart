@@ -81,14 +81,13 @@ class _MyWidgetState extends State<HomePage> {
     List<EnglishToday> newFavorites =
         words.where((word) => word.isFavorite == true).toList();
     // xóa từ mới khi ko like nữa
-    newFavorites =
-        newFavorites
-            .where(
-              (oldWord) => words.any(
-                (w) => w.noun == oldWord.noun && (w.isFavorite ?? false),
-              ),
-            )
-            .toList();
+    oldFavorites.removeWhere(
+      (oldWord) => words.any(
+        (w) =>
+            w.noun == oldWord.noun &&
+            (w.isFavorite == false || w.isFavorite == null),
+      ),
+    );
 
     // 🔹 Thêm các từ mới vào danh sách cũ (tránh trùng lặp)
     for (var word in newFavorites) {
@@ -207,12 +206,12 @@ class _MyWidgetState extends State<HomePage> {
                       color: AppColor.primaryColor,
                       elevation: 4,
                       child: InkWell(
-                        onDoubleTap: () async {
-                          setState(() {
-                            words[index].isFavorite = !words[index].isFavorite!;
-                          });
-                          await saveFavoriteWords(words);
-                        },
+                        // onDoubleTap: () async {
+                        //   setState(() {
+                        //     words[index].isFavorite = !words[index].isFavorite!;
+                        //   });
+                        //   await saveFavoriteWords(words);
+                        // },
                         splashColor: Colors.black26,
                         borderRadius: BorderRadius.all(Radius.circular(24)),
                         child: Container(
