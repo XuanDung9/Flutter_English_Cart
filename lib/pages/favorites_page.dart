@@ -42,7 +42,7 @@ class _FavoritesWordPageState extends State<FavoritesWordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor.secondColor,
+        backgroundColor: AppColor.lightBlue,
         title: Text(
           'Favorite words',
           textAlign: TextAlign.center,
@@ -55,33 +55,42 @@ class _FavoritesWordPageState extends State<FavoritesWordPage> {
           child: Image.asset(AppAssets.leftArrow),
         ),
       ),
-      body: ListView.builder(
-        itemCount: favoriteWords.length,
-        itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color:
-                  (index % 2) == 0
-                      ? AppColor.primaryColor
-                      : AppColor.secondColor,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-            ),
+      body: Container(
+        color: AppColor.lightBlue,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: favoriteWords.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      (index % 2) == 0
+                          ? AppColor.primaryColor
+                          : AppColor.secondColor,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
 
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              title: Text(
-                favoriteWords[index].noun!,
-                style:
-                    (index % 2) == 0
-                        ? AppStyles.h4
-                        : AppStyles.h4.copyWith(color: AppColor.textColor),
-              ),
-              subtitle: Text(favoriteWords[index].quote ?? 'Not quote'),
-              leading: Icon(Icons.favorite, color: Colors.red),
-            ),
-          );
-        },
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(8),
+                  title: Text(
+                    favoriteWords[index].noun!,
+                    style:
+                        (index % 2) == 0
+                            ? AppStyles.h4
+                            : AppStyles.h4.copyWith(color: AppColor.textColor),
+                  ),
+                  subtitle: Text(favoriteWords[index].quote ?? 'Not quote'),
+                  leading: Icon(Icons.favorite, color: Colors.red),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

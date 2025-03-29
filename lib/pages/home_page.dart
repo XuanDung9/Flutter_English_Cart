@@ -15,6 +15,7 @@ import 'package:flutter_application_1/values/app_color.dart';
 import 'package:flutter_application_1/values/app_style.dart';
 import 'package:flutter_application_1/values/share_key.dart';
 import 'package:flutter_application_1/widgets/app_button.dart';
+import 'package:like_button/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -79,6 +80,10 @@ class _MyWidgetState extends State<HomePage> {
     // 🔹 Lấy danh sách từ mới yêu thích
     List<EnglishToday> newFavorites =
         words.where((word) => word.isFavorite == true).toList();
+    // xóa từ mới khi ko like nữa
+    oldFavorites.removeWhere(
+      (oldWord) => !newFavorites.any((newWord) => newWord.noun == oldWord.noun),
+    );
 
     // 🔹 Thêm các từ mới vào danh sách cũ (tránh trùng lặp)
     for (var word in newFavorites) {
@@ -210,18 +215,46 @@ class _MyWidgetState extends State<HomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                alignment: Alignment.centerRight,
-                                child: Image.asset(
-                                  AppAssets.heart,
-                                  color:
-                                      (words[index].isFavorite ?? false)
-                                          ? Colors.red
-                                          : Colors.white,
-                                  width: 50,
-                                  height: 50,
+                              LikeButton(
+                                onTap: (bool isLiked) async {
+                                  setState(() {
+                                    words[index].isFavorite = !isLiked;
+                                  });
+                                  await saveFavoriteWords(words);
+                                  return !isLiked;
+                                },
+                                isLiked: words[index].isFavorite ?? false,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                size: 42,
+                                circleColor: CircleColor(
+                                  start: Color(0xff00ddff),
+                                  end: Color(0xff0099cc),
                                 ),
+                                bubblesColor: BubblesColor(
+                                  dotPrimaryColor: Color(0xff33b5e5),
+                                  dotSecondaryColor: Color(0xff0099cc),
+                                ),
+                                likeBuilder: (bool isLiked) {
+                                  return Image.asset(
+                                    AppAssets.heart,
+                                    color: isLiked ? Colors.red : Colors.white,
+                                    width: 50,
+                                    height: 50,
+                                  );
+                                },
                               ),
+                              // Container(
+                              //   alignment: Alignment.centerRight,
+                              //   child: Image.asset(
+                              //     AppAssets.heart,
+                              //     color:
+                              //         (words[index].isFavorite ?? false)
+                              //             ? Colors.red
+                              //             : Colors.white,
+                              //     width: 50,
+                              //     height: 50,
+                              //   ),
+                              // ),
                               RichText(
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
