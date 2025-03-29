@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_application_1/package/quote/quote.dart';
 import 'package:flutter_application_1/package/quote/quote_model.dart';
 import 'package:flutter_application_1/pages/all_word_page.dart';
 import 'package:flutter_application_1/pages/control_page.dart';
+import 'package:flutter_application_1/pages/favorites_page.dart';
 import 'package:flutter_application_1/values/app_assets.dart';
 import 'package:flutter_application_1/values/app_color.dart';
 import 'package:flutter_application_1/values/app_style.dart';
@@ -27,6 +29,7 @@ class _MyWidgetState extends State<HomePage> {
   late PageController _pageController;
 
   List<EnglishToday> words = [];
+  List<String> favoriteWordS = [];
   String? quote = Quotes().getRandom().content;
 
   List<int> fixedListRamdom({int len = 1, int max = 120, int min = 1}) {
@@ -47,6 +50,48 @@ class _MyWidgetState extends State<HomePage> {
       }
     }
     return newList;
+  }
+
+  // get
+  // Future<void> _loadFavoriteWords() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   List<String>? favoriteWordsJson = prefs.getStringList('favoriteWords');
+
+  //   if (favoriteWordsJson == null) return;
+
+  //   setState(() {
+  //     favoriteWordS = favoriteWordsJson.toList();
+  //   });
+  // }
+
+  Future<void> saveFavoriteWords(List<EnglishToday> words) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // 🔹 Lấy danh sách từ yêu thích đã lưu trước đó
+    List<String>? oldFavoritesJson = prefs.getStringList('favoriteWords');
+    List<EnglishToday> oldFavorites =
+        oldFavoritesJson != null
+            ? oldFavoritesJson
+                .map((json) => EnglishToday.fromJson(jsonDecode(json)))
+                .toList()
+            : [];
+
+    // 🔹 Lấy danh sách từ mới yêu thích
+    List<EnglishToday> newFavorites =
+        words.where((word) => word.isFavorite == true).toList();
+
+    // 🔹 Thêm các từ mới vào danh sách cũ (tránh trùng lặp)
+    for (var word in newFavorites) {
+      if (!oldFavorites.any((oldWord) => oldWord.noun == word.noun)) {
+        oldFavorites.add(word);
+      }
+    }
+
+    // 🔹 Chuyển danh sách thành JSON để lưu trữ
+    List<String> favoriteWordsJson =
+        oldFavorites.map((word) => jsonEncode(word.toJson())).toList();
+
+    await prefs.setStringList('favoriteWords', favoriteWordsJson);
   }
 
   getEnglishToday() async {
@@ -74,6 +119,8 @@ class _MyWidgetState extends State<HomePage> {
   @override
   void initState() {
     _pageController = PageController(viewportFraction: 0.8);
+    // _loadFavoriteWords();
+
     getEnglishToday();
     // TODO: implement initState
     super.initState();
@@ -150,10 +197,11 @@ class _MyWidgetState extends State<HomePage> {
                       color: AppColor.primaryColor,
                       elevation: 4,
                       child: InkWell(
-                        onDoubleTap: () {
+                        onDoubleTap: () async {
                           setState(() {
                             words[index].isFavorite = !words[index].isFavorite!;
                           });
+                          await saveFavoriteWords(words);
                         },
                         splashColor: Colors.black26,
                         borderRadius: BorderRadius.all(Radius.circular(24)),
@@ -285,7 +333,10 @@ class _MyWidgetState extends State<HomePage> {
                 child: AppButton(
                   label: 'Favorites',
                   ontap: () {
-                    print('Favorites');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => FavoritesWordPage()),
+                    );
                   },
                 ),
               ),
